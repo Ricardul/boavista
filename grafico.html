@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Faturamento Mensal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Cor de fundo suave */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        .chart-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px; /* Aumentado para melhor visualização */
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+            color: #1a202c; /* Cor escura para o título */
+            font-size: 1.75rem; /* Tamanho do título aumentado */
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 500px; /* Altura máxima para o gráfico */
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h1>Gráfico de Faturamento Mensal</h1>
+        <canvas id="revenueChart"></canvas>
+    </div>
+
+    <script>
+        // Dados extraídos e processados do PDF (mesmos valores, interpretação diferente)
+        const chartLabels = ["Maio/2024", "Junho/2024", "Julho/2024", "Agosto/2024", "Setembro/2024", "Outubro/2024", "Março/2024", "Fevereiro/2025", "Março/2025", "Abril/2025", "Maio/2025"];
+        const chartData = [1260.0, 500.0, 6006.0, 558.0, 3400.0, 450.0, 12105.0, 400.0, 92.0, 6080.0, 17480.0];
+
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctx, {
+            type: 'bar', // Tipo de gráfico: barras
+            data: {
+                labels: chartLabels, // Rótulos do eixo X (meses/anos)
+                datasets: [{
+                    label: 'Faturamento Mensal (R$)', // Legenda atualizada para Faturamento
+                    data: chartData, // Dados do eixo Y (valores)
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)', // Cor verde para faturamento
+                    borderColor: 'rgba(75, 192, 192, 1)', // Cor da borda das barras
+                    borderWidth: 1,
+                    borderRadius: 5, // Bordas arredondadas para as barras
+                    hoverBackgroundColor: 'rgba(75, 192, 192, 0.9)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Permite que o gráfico não mantenha a proporção para melhor ajuste
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value, index, values) {
+                                // Formata os ticks do eixo Y como moeda BRL
+                                return 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.2)', // Linhas de grade mais suaves
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false, // Remove linhas de grade do eixo X
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top', // Posição da legenda
+                         labels: {
+                            font: {
+                                size: 14 // Tamanho da fonte da legenda
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleFont: { size: 16 },
+                        bodyFont: { size: 14 },
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    // Formata o valor no tooltip como moeda BRL
+                                    label += 'R$ ' + context.parsed.y.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
